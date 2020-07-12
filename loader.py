@@ -31,18 +31,26 @@ def NumOfPhotos():
         try:
             a = int(input("Количество изображений для загрузки: "))
         except ValueError:
-            print("Количество изображений для загрузки (число): ")
+            print("Количество изображений для загрузки: ")
         else:
             break
     return a
 
 
-def SavePhotos(url, i, path):
+def SavePhotos(url, i, path, chose):
     print("начало сохранения изображения #" + str(i))
+    format = chose
+    if format == "https://nekos.life/api/kiss":
+        format = ".gif"
+    elif format == "https://nekos.life/api/v2/img/ngif":
+        format = ".gif"
+    else:
+        format = ".jpg"
+
     if path == "":
-        filename = "wallpaper" + str(i) + ".jpg"
+        filename = "image" + str(i) + format
     elif path != "":
-        filename = path + "\wallpaper" + str(i) + ".jpg"
+        filename = path + "\image" + str(i) + format
     else:
         print("При сохранении файла что то пошло не так! (Возможно вы указали не верный или не существующий путь.)")
 
@@ -53,17 +61,17 @@ def SavePhotos(url, i, path):
     print("изображение #" + str(i) + " было успешно сохранено по пути: " + path)
 
 
-def GetUrl(i, a, path):
+def GetUrl(i, a, path, chose):
     print("Начало загрузки изображений...")
     while i < a:
         i = i + 1
         print("Текущий прогресс: " + "[" + str(i) + "/" + str(a) + "]\n")
-        r = requests.get('https://nekos.life/api/v2/img/wallpaper')
+        r = requests.get(str(chose))
         html = BS4(r.content, 'html.parser')
         data = json.loads(str(html))
         url = data['url']
         print("Получено изображение: " + url)
-        SavePhotos(url, i, path)
+        SavePhotos(url, i, path, str(chose))
         t.sleep(1)
         os.system('cls||clear')
     print("Загрузка изображений закончена")
@@ -75,13 +83,51 @@ def GetPath():
     return getPath
 
 
+ChoseBanner = """
+ ___________________________________________________
+|                                                   |
+|               Укажите один вариант:               |
+|                                                   |
+|                1 - > wallpaper                    |
+|                                                   |
+|                2 - > hentai                       |
+|                                                   |
+|                3 - > neko                         |
+|                                                   |
+|                4 - > kiss                         |
+|                                                   |
+|                5 - > ngif                         |
+|___________________________________________________|
+"""
+
+
+def GetValue():
+    print(ChoseBanner)
+    cho = str(input("Вариант: "))
+    if cho == "wallpaper":
+        return "https://nekos.life/api/v2/img/wallpaper"
+    elif cho == "hentai":
+        return "https://nekos.life/api/v2/img/hentai"
+    elif cho == "neko":
+        return "https://nekos.life/api/v2/img/neko"
+    elif cho == "kiss":
+        return "https://nekos.life/api/kiss"
+    elif cho == "ngif":
+        return "https://nekos.life/api/v2/img/ngif"
+    else:
+        print("Неверный вариант!")
+        quit()
+
+
 a = NumOfPhotos()
 path = GetPath()
+chose = GetValue()
 
 if a == 0:
     quit()
 elif a >= 1:
-    GetUrl(i, a, path)
+    print("lol : " + chose)
+    GetUrl(i, a, path, chose)
 else:
     print("Что-то пошло не так!")
 
